@@ -7,10 +7,10 @@ if(NOT WIN32)
     option( USE_NATIVE_ARCH  "build which -march=native" ON)
 endif(NOT WIN32)
 
-option( USE_GUI     "don't build netgen with GUI" ON )
-option( USE_PYTHON  "build with python interface" ON )
+option( USE_GUI     "don't build netgen with GUI" OFF )
+option( USE_PYTHON  "build with python interface" OFF )
 option( USE_MPI     "enable mpi parallelization" OFF )
-option( USE_OCC     "(not supported) compile with OpenCascade geometry kernel" OFF)
+option( USE_OCC     "(not supported) compile with OpenCascade geometry kernel" ON)
 option( USE_JPEG    "enable snapshots using library libjpeg" OFF )
 option( USE_MPEG    "enable video recording with FFmpeg, uses libavcodec" OFF )
 option( INTEL_MIC        "cross compile for intel xeon phi")
@@ -18,7 +18,7 @@ option( INSTALL_PROFILES "install environment variable settings to /etc/profile.
 option( INSTALL_DEPENDENCIES "install dependencies like tcl, useful for packaging" OFF )
 option( USE_CCACHE       "use ccache")
 
-option( USE_SUPERBUILD       "use ccache" ON)
+option( USE_SUPERBUILD       "use ccache" OFF)
 
 if (USE_SUPERBUILD)
   project (SUPERBUILD)
@@ -38,6 +38,21 @@ set(PACKAGE_VERSION "${NETGEN_VERSION_MAJOR}.${NETGEN_VERSION_MINOR}-${NETGEN_VE
 set(CPACK_PACKAGE_VERSION "${PACKAGE_VERSION}")
 # set(CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}"
 
+#######################################################################
+if(WIN32)
+  if(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+    string(REGEX REPLACE "/W[0-4]" "/W0" CMAKE_CXX_FLAGS_NEW ${CMAKE_CXX_FLAGS})
+    set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS_NEW} CACHE STRING "compile flags" FORCE)
+    string(REGEX REPLACE "/W[0-4]" "/W0" CMAKE_CXX_FLAGS_NEW ${CMAKE_CXX_FLAGS_RELEASE})
+    set(CMAKE_CXX_FLAGS_RELEASE ${CMAKE_CXX_FLAGS_NEW} CACHE STRING "compile flags" FORCE)
+
+    string(REGEX REPLACE "/W[0-4]" "/W0" CMAKE_SHARED_LINKER_FLAGS_NEW ${CMAKE_SHARED_LINKER_FLAGS})
+    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS_NEW} /IGNORE:4217,4049" CACHE STRING "compile flags" FORCE)
+    string(REGEX REPLACE "/W[0-4]" "/W0" CMAKE_EXE_LINKER_FLAGS_NEW ${CMAKE_EXE_LINKER_FLAGS})
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS_NEW}/IGNORE:4217,4049" CACHE STRING "compile flags" FORCE)
+
+  endif(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Intel")
+endif(WIN32)
 
 #######################################################################
 if(USE_CCACHE)
@@ -261,7 +276,7 @@ execute_process(COMMAND hdiutil create -volname Netgen -srcfolder ${INSTALL_DIR}
 #######################################################################
 
 add_subdirectory(libsrc)
-add_subdirectory(ng)
+# add_subdirectory(ng)
 add_subdirectory(tutorials)
 if (USE_PYTHON)
   add_subdirectory(python)
