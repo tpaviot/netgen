@@ -240,6 +240,23 @@ if (USE_MPEG)
     include_directories(${FFMPEG_INCLUDE_DIR})
 endif (USE_MPEG)
 
+# install dir
+if(APPLE)
+  set(INSTALL_DIR /Applications CACHE PATH "Install path")
+  set(CMAKE_INSTALL_PREFIX "${INSTALL_DIR}/Netgen.app/Contents/Resources" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
+else(APPLE)
+  set(INSTALL_DIR /opt/netgen CACHE PATH "Install path")
+  set(CMAKE_INSTALL_PREFIX "${INSTALL_DIR}" CACHE INTERNAL "Prefix prepended to install directories" FORCE)
+endif(APPLE)
+if(UNIX)
+  message("Checking for write permissions in install directory...")
+  execute_process(COMMAND mkdir -p ${INSTALL_DIR})
+  execute_process(COMMAND test -w ${INSTALL_DIR} RESULT_VARIABLE res)
+  if(res)
+    message(WARNING "No write access at install directory, please set correct permissions")
+  endif()
+endif(UNIX)
+
 #######################################################################
 if(INSTALL_PROFILES)
     file(WRITE  ${CMAKE_CURRENT_BINARY_DIR}/netgen.sh "#!/bin/sh\n")
