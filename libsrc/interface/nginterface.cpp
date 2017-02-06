@@ -2315,7 +2315,9 @@ void Ng_GetArgs (int & argc, char ** &argv)
   argv = h_argv;
 }
 
-void Ng_Redraw (bool blocking) { ; }
+
+void Ng_Redraw(bool blocking) { ; }
+
 
 void LinkFunction ()
 {

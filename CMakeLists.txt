@@ -8,9 +8,9 @@ if(NOT WIN32)
 endif(NOT WIN32)
 
 option( USE_GUI     "don't build netgen with GUI" OFF )
-option( USE_PYTHON  "build with python interface" OFF )
+option( USE_PYTHON  "build with python interface" ON )
 option( USE_MPI     "enable mpi parallelization" OFF )
-option( USE_OCC     "(not supported) compile with OpenCascade geometry kernel" ON)
+option( USE_OCC     "(not supported) compile with OpenCascade geometry kernel" OFF)
 option( USE_JPEG    "enable snapshots using library libjpeg" OFF )
 option( USE_MPEG    "enable video recording with FFmpeg, uses libavcodec" OFF )
 option( INTEL_MIC        "cross compile for intel xeon phi")
@@ -145,6 +145,15 @@ macro(get_dll_from_lib dll_path lib_path)
         get_filename_component(lib_name ${lib} name)
 endmacro()
 
+macro(set_vars VAR_OUT)
+  foreach(varname ${ARGN})
+    if(NOT "${${varname}}" STREQUAL "")
+      string(REPLACE ";" "$<SEMICOLON>" varvalue "${${varname}}" )
+      list(APPEND ${VAR_OUT} -D${varname}=${varvalue})
+    endif()
+  endforeach()
+endmacro()
+
 if(WIN32)
     get_WIN32_WINNT(ver)
     add_definitions(-D_WIN32_WINNT=${ver} -DWNT -DWNT_WINDOW -DNOMINMAX)
@@ -201,13 +210,23 @@ endif (USE_GUI)
 
 #######################################################################
 if (USE_PYTHON)
+    find_package(PythonInterp REQUIRED)
+    find_package(PythonLibs REQUIRED)
+    find_path(PYBIND_INCLUDE_DIR pybind11/pybind11.h PATHS ${PYTHON_INCLUDE_PATH})
+
+    if( PYBIND_INCLUDE_DIR )
+        message("-- Found Pybind11: ${PYBIND_INCLUDE_DIR}")
+    else( PYBIND_INCLUDE_DIR )
+        message(FATAL_ERROR "Could NOT find pybind11!")
+    endif( PYBIND_INCLUDE_DIR )
+
     add_definitions(-DNG_PYTHON)
-
     include_directories(${PYBIND_INCLUDE_DIR})
-    include_directories(${PYTHON_INCLUDE_DIRS})
-
+    include_directories(${PYBIND_INCLUDE_DIRS})
+    
     install(DIRECTORY ${PYBIND_INCLUDE_DIR}/pybind11 DESTINATION ${INCDIR} COMPONENT netgen_devel)
-    install(FILES ${PYBIND_INCLUDE_DIR}/../LICENSE DESTINATION ${INCDIR}/pybind11 COMPONENT netgen_devel)
+    
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1,0,''))" OUTPUT_VARIABLE PYTHON_PACKAGES_INSTALL_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif (USE_PYTHON)
 
 #######################################################################
@@ -293,7 +312,7 @@ execute_process(COMMAND hdiutil create -volname Netgen -srcfolder ${INSTALL_DIR}
 #######################################################################
 
 add_subdirectory(libsrc)
-# add_subdirectory(ng)
+add_subdirectory(ng)
 add_subdirectory(tutorials)
 if (USE_PYTHON)
   add_subdirectory(python)
@@ -409,6 +428,31 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/NetgenConfig.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/NetgenConfig.cmake @ONLY)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NetgenConfig.cmake DESTINATION share/cmake)
+
+#######################################################################
+# propagate cmake variables to Netgen subproject
+set_vars( NETGEN_CMAKE_ARGS
+  CMAKE_BUILD_TYPE
+  CMAKE_SHARED_LINKER_FLAGS
+  CMAKE_SHARED_LINKER_FLAGS_RELEASE
+  CMAKE_CXX_FLAGS
+  CMAKE_CXX_FLAGS_RELEASE
+
+  USE_GUI
+  USE_PYTHON
+  USE_MPI
+  USE_VT
+  USE_VTUNE
+  USE_NUMA
+  USE_CCACHE
+  USE_NATIVE_ARCH
+  USE_OCC
+  USE_MPEG
+  INSTALL_DIR
+  INSTALL_DEPENDENCIES
+  INTEL_MIC
+  CMAKE_PREFIX_PATH
+  )
 
 #######################################################################
 # Configure message
