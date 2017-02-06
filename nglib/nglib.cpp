@@ -970,6 +970,8 @@ namespace nglib
    {
       uselocalh = 1;
 
+	  edge_subdivide = 1;
+
       maxh = 1000;
       minh = 0.0;
 
@@ -1051,6 +1053,8 @@ namespace nglib
    DLL_HEADER void Ng_Meshing_Parameters :: Transfer_Parameters()
    {
       mparam.uselocalh = uselocalh;
+
+	  mparam.edge_subdivide = edge_subdivide;
       
       mparam.maxh = maxh;
       mparam.minh = minh;

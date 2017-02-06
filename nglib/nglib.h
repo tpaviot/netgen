@@ -94,6 +94,8 @@ class Ng_Meshing_Parameters
 public:
    int uselocalh;                      //!< Switch to enable / disable usage of local mesh size modifiers
 
+   bool edge_subdivide;                //!< Option to subdivide edges (0 => no; 1 => yes)
+
    double maxh;                        //!< Maximum global mesh size allowed
    double minh;                        //!< Minimum global mesh size allowed
 
@@ -136,6 +138,7 @@ public:
       Note: This constructor initialises the variables in the 
       class with the following default values
       - #uselocalh: 1
+	  - #edge_subdivide: 1
       - #maxh: 1000.0
       - #fineness: 0.5
       - #grading: 0.3

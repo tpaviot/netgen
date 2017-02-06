@@ -16,7 +16,17 @@ namespace netgen
 		      // double h, double h1, double h2, double hcurve, 
 		      double elto0, Array<double> & points)
   {
-    double fperel, oldf, f;
+
+	  // Edge subdivision is optional.
+	  if (!mp.edge_subdivide)
+	  {
+		  points.SetSize(0);
+		  points.Append(0);
+		  points.Append(spline.Length());
+		  return;
+	  }
+	  
+	double fperel, oldf, f;
 
     int n = 10000;
     

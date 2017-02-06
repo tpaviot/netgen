@@ -1155,7 +1155,9 @@ namespace netgen
     int inverttrigs = 0;
     ///
     int autozrefine = 0;
-    ///
+    /// Option to subdivide edges
+	bool edge_subdivide = 1;
+	///
     MeshingParameters ();
     ///
     MeshingParameters (const MeshingParameters & mp2) = default;

@@ -2624,6 +2624,7 @@ namespace netgen
     // curvaturesafety = 2;
     // segmentsperedge = 1;
     // parthread = 0;
+	// edge_subdivide = 0;
 
     // elsizeweight = 0.2;
     // giveuptol2d = 200;
@@ -2640,40 +2641,41 @@ namespace netgen
 
   void MeshingParameters :: Print (ostream & ost) const
   {
-    ost << "Meshing parameters: " << endl
-        << "optimize3d = " << optimize3d << endl
-        << "optsteps3d = " << optsteps3d << endl
-        << " optimize2d = " <<  optimize2d << endl
-        << " optsteps2d = " <<  optsteps2d << endl
-        << " opterrpow = " <<  opterrpow << endl
-        << " blockfill = " <<  blockfill << endl
-        << " filldist = " <<  filldist << endl
-        << " safety = " <<  safety << endl
-        << " relinnersafety = " <<  relinnersafety << endl
-        << " uselocalh = " <<  uselocalh << endl
-        << " grading = " <<  grading << endl
-        << " delaunay = " <<  delaunay << endl
-        << " maxh = " <<  maxh << endl
-        << " meshsizefilename = " <<  meshsizefilename << endl
-        << " startinsurface = " <<  startinsurface << endl
-        << " checkoverlap = " <<  checkoverlap << endl
-        << " checkchartboundary = " <<  checkchartboundary << endl
-        << " curvaturesafety = " <<  curvaturesafety << endl
-        << " segmentsperedge = " <<  segmentsperedge << endl
-        << " parthread = " <<  parthread << endl
-        << " elsizeweight = " <<  elsizeweight << endl
-        << " giveuptol2d = " <<  giveuptol2d << endl
-        << " giveuptol = " <<  giveuptol << endl
-        << " maxoutersteps = " <<  maxoutersteps << endl
-        << " starshapeclass = " <<  starshapeclass << endl
-        << " baseelnp        = " <<  baseelnp        << endl
-        << " sloppy = " <<  sloppy << endl
-        << " badellimit = " <<  badellimit << endl
-        << " secondorder = " <<  secondorder << endl
-        << " elementorder = " <<  elementorder << endl
-        << " quad = " <<  quad << endl
-        << " inverttets = " <<  inverttets << endl
-        << " inverttrigs = " <<  inverttrigs << endl;
+	  ost << "Meshing parameters: " << endl
+		  << "optimize3d = " << optimize3d << endl
+		  << "optsteps3d = " << optsteps3d << endl
+		  << " optimize2d = " << optimize2d << endl
+		  << " optsteps2d = " << optsteps2d << endl
+		  << " opterrpow = " << opterrpow << endl
+		  << " blockfill = " << blockfill << endl
+		  << " filldist = " << filldist << endl
+		  << " safety = " << safety << endl
+		  << " relinnersafety = " << relinnersafety << endl
+		  << " uselocalh = " << uselocalh << endl
+		  << " grading = " << grading << endl
+		  << " delaunay = " << delaunay << endl
+		  << " maxh = " << maxh << endl
+		  << " meshsizefilename = " << meshsizefilename << endl
+		  << " startinsurface = " << startinsurface << endl
+		  << " checkoverlap = " << checkoverlap << endl
+		  << " checkchartboundary = " << checkchartboundary << endl
+		  << " curvaturesafety = " << curvaturesafety << endl
+		  << " segmentsperedge = " << segmentsperedge << endl
+		  << " parthread = " << parthread << endl
+		  << " elsizeweight = " << elsizeweight << endl
+		  << " giveuptol2d = " << giveuptol2d << endl
+		  << " giveuptol = " << giveuptol << endl
+		  << " maxoutersteps = " << maxoutersteps << endl
+		  << " starshapeclass = " << starshapeclass << endl
+		  << " baseelnp        = " << baseelnp << endl
+		  << " sloppy = " << sloppy << endl
+		  << " badellimit = " << badellimit << endl
+		  << " secondorder = " << secondorder << endl
+		  << " elementorder = " << elementorder << endl
+		  << " quad = " << quad << endl
+		  << " inverttets = " << inverttets << endl
+		  << " inverttrigs = " << inverttrigs << endl
+		  << " edge_subdivide = " << edge_subdivide << endl;
   }
 
   /*
@@ -2703,6 +2705,7 @@ namespace netgen
     checkchartboundary = other.checkchartboundary;
     curvaturesafety = other.curvaturesafety;
     segmentsperedge = other.segmentsperedge;
+	edge_subdivide = other.edge_subdivide;
     parthread = other.parthread;
     elsizeweight = other.elsizeweight;
     giveuptol2d = other.giveuptol2d;
