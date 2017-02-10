@@ -167,7 +167,7 @@ if(WIN32)
 else(WIN32)
     # build shared libraries
     set(NG_LIB_TYPE SHARED)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif(WIN32)
 if(APPLE)
 #    set(MACOSX_BUNDLE ON)
