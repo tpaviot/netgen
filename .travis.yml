@@ -14,7 +14,14 @@ language: cpp
 
 matrix:
   include:
-    - env: ARCH="x86_64"
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-5
+      end: COMPILER=g++-5
       os: linux
     - env: ARCH="x86_64"
       os: osx
