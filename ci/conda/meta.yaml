@@ -1,4 +1,4 @@
-package:
+﻿package:
   name: netgen
   version: 6.2
 
@@ -24,10 +24,12 @@ requirements:
     - oce ==0.17.2
     - ninja
     - cmake
+    - boost
 
   run:
     - oce ==0.17.2
+
 about:
   home: https://sourceforge.net/projects/netgen-mesher
   license: LGPL
-  summary: Automatic mesh generator for PythonOCC
+  summary: Mesh generator.
