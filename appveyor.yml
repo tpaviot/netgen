@@ -1,4 +1,4 @@
-version: smesh-6.7.1.{build}
+version: netgen-6.2.{build}
 
 environment:
   global:
@@ -78,7 +78,7 @@ test_script:
   - "%CMD_IN_ENV% conda build ci\\conda --no-remove-work-dir"
 # move conda package to /dist
   - cmd: 'mkdir dist'
-  - cmd: 'copy /Y %CONDA_INSTALL_LOCN%\conda-bld\win-%ARCH%\smesh*.bz2 dist || cmd /c "exit /b 0"'
+  - cmd: 'copy /Y %CONDA_INSTALL_LOCN%\conda-bld\win-%ARCH%\netgen*.bz2 dist || cmd /c "exit /b 0"'
   - cmd: 'dir dist'
 
 artifacts:

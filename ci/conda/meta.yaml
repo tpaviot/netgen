@@ -1,6 +1,6 @@
 ﻿package:
-  name: smesh
-  version: 6.7.1
+  name: netgen
+  version: 6.2
 
 source:
   path: ../..
@@ -24,12 +24,11 @@ requirements:
     - oce ==0.17.2
     - ninja
     - cmake
-    - boost
 
   run:
     - oce ==0.17.2
 
 about:
-  home: https://github.com/tpaviot/smesh
+  home: https://sourceforge.net/projects/netgen-mesher
   license: LGPL
-  summary: A complete MESH framework based on the OCE library.
+  summary: Automatic mesh generator for PythonOCC
