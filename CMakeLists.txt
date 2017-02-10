@@ -8,9 +8,9 @@ if(NOT WIN32)
 endif(NOT WIN32)
 
 option( USE_GUI     "don't build netgen with GUI" OFF )
-option( USE_PYTHON  "build with python interface" ON )
+option( USE_PYTHON  "build with python interface" OFF )
 option( USE_MPI     "enable mpi parallelization" OFF )
-option( USE_OCC     "(not supported) compile with OpenCascade geometry kernel" OFF)
+option( USE_OCC     "(not supported) compile with OpenCascade geometry kernel" ON)
 option( USE_JPEG    "enable snapshots using library libjpeg" OFF )
 option( USE_MPEG    "enable video recording with FFmpeg, uses libavcodec" OFF )
 option( INTEL_MIC        "cross compile for intel xeon phi")
@@ -240,9 +240,10 @@ endif (USE_MPI)
 
 #######################################################################
 if (USE_OCC)
-    find_package(OpenCasCade REQUIRED)
+    find_package(OCE REQUIRED)
     add_definitions(-DOCCGEOMETRY -D_OCC64)
-    include_directories(${OCC_INCLUDE_DIR})
+    include_directories(${OCE_INCLUDE_DIRS})
+    set(OCC_LIBRARIES ${OCE_LIBRARIES})
 endif (USE_OCC)
 
 #######################################################################
