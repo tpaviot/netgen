@@ -1,4 +1,4 @@
-﻿package:
+package:
   name: netgen
   version: 6.2
 
@@ -27,7 +27,6 @@ requirements:
 
   run:
     - oce ==0.17.2
-
 about:
   home: https://sourceforge.net/projects/netgen-mesher
   license: LGPL
