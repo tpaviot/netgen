@@ -24,6 +24,7 @@ requirements:
     - oce ==0.17.2
     - ninja
     - cmake
+    - boost
 
   run:
     - oce ==0.17.2
