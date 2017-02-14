@@ -51,3 +51,5 @@ endif(USE_PYTHON)
 # endif(NOT WIN32)
 
 install(TARGETS nglib ${ng_install_dir})
+
+install(FILES nglib.h DESTINATION ${INCDIR} COMPONENT netgen_devel)
