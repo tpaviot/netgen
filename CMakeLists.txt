@@ -112,7 +112,7 @@ include_directories ("${PROJECT_BINARY_DIR}")
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH}" "${PROJECT_SOURCE_DIR}/cmake_modules")
 
-set(INCDIR include CACHE PATH "install directory for header files")
+set(INCDIR include/netgen CACHE PATH "install directory for header files")
 if(APPLE)
   set(ng_install_dir_bin ../MacOS)
   set(ng_install_dir_lib ../MacOS)
