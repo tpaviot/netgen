@@ -121,7 +121,7 @@ else(APPLE)
   set(ng_install_dir_lib lib)
 endif(APPLE)
 set(ng_install_dir EXPORT netgen-targets RUNTIME DESTINATION ${ng_install_dir_bin} COMPONENT netgen LIBRARY DESTINATION ${ng_install_dir_lib} COMPONENT netgen_devel ARCHIVE DESTINATION ${ng_install_dir_lib} COMPONENT netgen_devel)
-install(EXPORT netgen-targets DESTINATION share/cmake)
+install(EXPORT netgen-targets DESTINATION cmake)
 
 include (CheckIncludeFiles)
 check_include_files (dlfcn.h HAVE_DLFCN_H)
@@ -428,7 +428,7 @@ add_custom_target(uninstall
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules/NetgenConfig.cmake.in
 	${CMAKE_CURRENT_BINARY_DIR}/NetgenConfig.cmake @ONLY)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NetgenConfig.cmake DESTINATION share/cmake)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NetgenConfig.cmake DESTINATION cmake)
 
 #######################################################################
 # propagate cmake variables to Netgen subproject
