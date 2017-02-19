@@ -338,7 +338,7 @@ namespace netgen
     ///
     Element2d ();
     ///
-    Element2d (int anp);
+    DLL_HEADER Element2d (int anp);
     ///
     DLL_HEADER Element2d (ELEMENT_TYPE type);
     ///

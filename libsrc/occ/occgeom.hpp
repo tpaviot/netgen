@@ -244,7 +244,7 @@ namespace netgen
       }
 
 
-     virtual void Save (string filename) const;
+     DLL_HEADER virtual void Save (string filename) const;
 
 
       DLL_HEADER void BuildFMap();
@@ -275,7 +275,7 @@ namespace netgen
          return OCCSurface (TopoDS::Face(fmap(surfi)), PLANESPACE);
       }
 
-      void CalcBoundingBox ();
+      DLL_HEADER void CalcBoundingBox ();
       DLL_HEADER void BuildVisualizationMesh (double deflection);
 
       void RecursiveTopologyTree (const TopoDS_Shape & sh,
