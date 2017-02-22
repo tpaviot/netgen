@@ -169,7 +169,7 @@ public:
 class OCCGeometry;
 
 
-class DLL_HEADER OCCRefinementSurfaces : public Refinement
+class OCCRefinementSurfaces : public Refinement
 {
   const OCCGeometry & geometry;
 
