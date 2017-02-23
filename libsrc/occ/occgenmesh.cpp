@@ -334,6 +334,8 @@ namespace netgen
       (*testout) << "nedges = " << nedges << endl;
 
       double eps = 1e-6 * geom.GetBoundingBox().Diam();
+	  const double eps2 = eps * eps; // -- small optimization
+	  int first_vp = mesh.GetNP() + 1; // -- to support SMESH sub-meshes
 
       for (int i = 1; i <= nvertices; i++)
       {
@@ -343,7 +345,7 @@ namespace netgen
          bool exists = 0;
          if (merge_solids)
             for (PointIndex pi = 1; pi <= mesh.GetNP(); pi++)
-               if ( Dist2 (mesh[pi], Point<3>(mp)) < eps*eps)
+               if ( Dist2 (mesh[pi], Point<3>(mp)) < eps2) // -- small optimization
                {
                   exists = 1;
                   break;
@@ -373,6 +375,7 @@ namespace netgen
          {
             TopoDS_Face face = TopoDS::Face(exp1.Current());
             int facenr = geom.fmap.FindIndex(face);
+			if (facenr < 1) continue; // -- to support SMESH sub-meshes
 
             if (face2solid[0][facenr-1] == 0)
                face2solid[0][facenr-1] = solidnr;
@@ -392,6 +395,7 @@ namespace netgen
       int facenr = 0;
       int edgenr = 0;
 
+	  edgenr = mesh.GetNSeg(); // to support SMESH sub-meshes
 
       (*testout) << "faces = " << geom.fmap.Extent() << endl;
       int curr = 0;
@@ -453,6 +457,7 @@ namespace netgen
                   //(*testout) << "ignoring degenerated edge" << endl;
                   continue;
                }
+			   if (geom.emap.FindIndex(edge) < 1) continue; // to support SMESH sub-meshes
 
                if (geom.vmap.FindIndex(TopExp::FirstVertex (edge)) ==
                   geom.vmap.FindIndex(TopExp::LastVertex (edge)))
@@ -596,6 +601,7 @@ namespace netgen
                   bool exists = 0;
                   int j;
                   for (j = first_ep; j <= mesh.GetNP(); j++)
+					 if (!merge_solids && mesh.Point(j).GetLayer() != geomedgenr) continue; // to support SMESH fuse edges
                      if ((mesh.Point(j)-Point<3>(mp[i-1])).Length() < eps)
                      {
                         exists = 1;
@@ -606,7 +612,8 @@ namespace netgen
                         pnums[i] = j;
                      else
                      {
-                        mesh.AddPoint (mp[i-1]);
+                        //mesh.AddPoint (mp[i-1]);
+						mesh.AddPoint(mp[i - 1], geomedgenr); // to support SMESH fuse edges
                         (*testout) << "add meshpoint " << mp[i-1] << endl;
                         pnums[i] = mesh.GetNP();
                      }
@@ -690,6 +697,8 @@ namespace netgen
       //		(*testout) << "edge " << mesh.LineSegment(i).edgenr << " face " << mesh.LineSegment(i).si
       //				<< " p1 " << mesh.LineSegment(i)[0] << " p2 " << mesh.LineSegment(i)[1] << endl;
       //	exit(10);
+	  for (int j = 1; j <= mesh.GetNP(); j++) // to support SMESH fuse edges: set level to zero
+	    mesh.Point(j) = MeshPoint((Point<3>&) mesh.Point(j));
 
       mesh.CalcSurfacesOfNode();
       multithread.task = savetask;
