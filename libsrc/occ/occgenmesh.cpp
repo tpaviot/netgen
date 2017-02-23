@@ -172,7 +172,8 @@ namespace netgen
             return;
 
 
-         if (h > 30) return;
+         // commented to restrict H on a large sphere for example
+		 //if (h > 30) return;
       }
 
       if (h < maxside && depth < 10)
@@ -250,8 +251,8 @@ namespace netgen
       hvalue[0] = 0;
       pnt = c->Value(s0);
 
-      double olddist = 0;
-      double dist = 0;
+      //double olddist = 0; -- useless variables
+      //double dist = 0;
 
       int tmpVal = (int)(DIVIDEEDGESECTIONS);
 
@@ -259,15 +260,19 @@ namespace netgen
       {
          oldpnt = pnt;
          pnt = c->Value(s0+(i/double(DIVIDEEDGESECTIONS))*(s1-s0));
-         hvalue[i] = hvalue[i-1] +
-            1.0/mesh.GetH(Point3d(pnt.X(), pnt.Y(), pnt.Z()))*
-            pnt.Distance(oldpnt);
+		 // -- no more than 1 segment per edge <edge length>/DIVIDEEDGESECTIONS
+		 hvalue[i] = hvalue[i - 1] +
+			 //   1.0/mesh.GetH(Point3d(pnt.X(), pnt.Y(), pnt.Z()))*
+			 //   pnt.Distance(oldpnt);
+			 min(1.0,
+				 1.0 / mesh.GetH(Point3d(pnt.X(), pnt.Y(), pnt.Z()))*
+				 pnt.Distance(oldpnt));
 
          //(*testout) << "mesh.GetH(Point3d(pnt.X(), pnt.Y(), pnt.Z())) " << mesh.GetH(Point3d(pnt.X(), pnt.Y(), pnt.Z()))
          //	   <<  " pnt.Distance(oldpnt) " << pnt.Distance(oldpnt) << endl;
 
-         olddist = dist;
-         dist = pnt.Distance(oldpnt);
+         //olddist = dist; -- useless variables
+         //dist = pnt.Distance(oldpnt);
       }
 
       //  nsubedges = int(ceil(hvalue[DIVIDEEDGESECTIONS]));
@@ -282,7 +287,10 @@ namespace netgen
       {
          if (hvalue[i1]/hvalue[DIVIDEEDGESECTIONS]*nsubedges >= i)
          {
-            params[i] = s0+(i1/double(DIVIDEEDGESECTIONS))*(s1-s0);
+            // -- for nsubedges comparable to DIVIDEEDGESECTIONS
+			//params[i] = s0+(i1/double(DIVIDEEDGESECTIONS))*(s1-s0);
+			double d1 = i1 - (hvalue[i1] - i*hvalue[DIVIDEEDGESECTIONS] / nsubedges) / (hvalue[i1] - hvalue[i1 - 1]);
+			params[i] = s0 + (d1 / double(DIVIDEEDGESECTIONS))*(s1 - s0);
             pnt = c->Value(params[i]);
             ps[i-1] = MeshPoint (Point3d(pnt.X(), pnt.Y(), pnt.Z()));
             i++;
@@ -477,20 +485,108 @@ namespace netgen
 
                if (!merge_solids)
                {
-                  pnums[0] = geom.vmap.FindIndex (TopExp::FirstVertex (edge));
-                  pnums[pnums.Size()-1] = geom.vmap.FindIndex (TopExp::LastVertex (edge));
+                  //pnums[0] = geom.vmap.FindIndex (TopExp::FirstVertex (edge));
+                  //pnums[pnums.Size()-1] = geom.vmap.FindIndex (TopExp::LastVertex (edge));
+				  MeshPoint dfltP(Point<3>(0, 0, 0));
+				  int *ipp[] = { &pnums[0], &pnums[pnums.Size() - 1] };
+				  TopoDS_Iterator vIt(edge, false);
+				  TopoDS_Vertex v[2];
+				  v[0] = TopoDS::Vertex(vIt.Value()); vIt.Next();
+				  v[1] = TopoDS::Vertex(vIt.Value());
+				  if (v[0].Orientation() == TopAbs_REVERSED)
+					   std::swap(v[0], v[1]);
+				  for (int i = 0; i < 2; ++i)
+				  {
+					  int &ip = *ipp[i];
+					  ip = geom.vmap.FindIndex(v[i]);
+					  if (ip == 0 || ip > nvertices)
+					  {
+						  int iv = ip;
+						  if (ip == 0)
+							  ip = iv = geom.vmap.Add(v[i]);
+						  gp_Pnt pnt = BRep_Tool::Pnt(v[i]);
+						  MeshPoint mp(Point<3>(pnt.X(), pnt.Y(), pnt.Z()));
+						  for (PointIndex pi = 1; pi < first_vp; pi++)
+							  if (Dist2(mesh.Point(pi), Point<3>(mp)) < 1e-100)
+							  {
+								  ip = pi;
+								  if (mesh.Point(ip).GetLayer() != dfltP.GetLayer() && mesh.Point(ip).GetLayer() != iv)
+									  continue;
+								  if (mesh.Point(ip).GetLayer() == dfltP.GetLayer())
+									  mesh.Point(ip) = MeshPoint(mesh.Point(ip), iv);
+								  break;
+							  }
+					  }
+					  else
+					  {
+					    ip += first_vp - 1;
+					}
+				  }
                }
                else
                {
-                  Point<3> fp = occ2ng (BRep_Tool::Pnt (TopExp::FirstVertex (edge)));
-                  Point<3> lp = occ2ng (BRep_Tool::Pnt (TopExp::LastVertex (edge)));
+                  //Point<3> fp = occ2ng (BRep_Tool::Pnt (TopExp::FirstVertex (edge)));
+                  //Point<3> lp = occ2ng (BRep_Tool::Pnt (TopExp::LastVertex (edge)));
+				  TopoDS_Iterator vIt(edge, false);
+				  TopoDS_Vertex v1 = TopoDS::Vertex(vIt.Value()); vIt.Next();
+				  TopoDS_Vertex v2 = TopoDS::Vertex(vIt.Value());
+				  if (v1.Orientation() == TopAbs_REVERSED)
+					std::swap(v1, v2);
+				  const bool isClosedEdge = v1.IsSame(v2);
+
+				   Point<3> fp = occ2ng(BRep_Tool::Pnt(v1));
+				   Point<3> lp = occ2ng(BRep_Tool::Pnt(v2));
+				   double tol2 = std::min(eps*eps, 1e-6 * Dist2(fp, lp));
+				   if (isClosedEdge)
+				     tol2 = BRep_Tool::Tolerance(v1) * BRep_Tool::Tolerance(v1);
 
                   pnums[0] = -1;
                   pnums.Last() = -1;
                   for (PointIndex pi = 1; pi < first_ep; pi++)
                   {
-                     if (Dist2 (mesh[pi], fp) < eps*eps) pnums[0] = pi;
-                     if (Dist2 (mesh[pi], lp) < eps*eps) pnums.Last() = pi;
+                     //if (Dist2 (mesh[pi], fp) < eps*eps) pnums[0] = pi;
+                     //if (Dist2 (mesh[pi], lp) < eps*eps) pnums.Last() = pi;
+					 if (Dist2(mesh[pi], fp) < tol2) pnums[0] = pi;
+					 if (Dist2(mesh[pi], lp) < tol2) pnums.Last() = pi;
+				  }
+				  if ((isClosedEdge && pnums[0] != pnums.Last()) ||
+				      (!isClosedEdge && pnums[0] == pnums.Last()))
+					pnums[0] = pnums.Last() = -1;
+				  if (pnums[0] == -1 || pnums.Last() == -1)
+				    {
+					  // take into account a possible large gap between a vertex and an edge curve
+					  // end and a large vertex tolerance covering the whole edge
+					  if (pnums[0] == -1)
+					    {
+						  double tol = BRep_Tool::Tolerance(v1);
+						  for (PointIndex pi = 1; pi < first_ep; pi++)
+						    if (pi != pnums.Last() && Dist2(mesh[pi], fp) < 2 * tol*tol)
+							  pnums[0] = pi;
+
+							if (pnums[0] == -1)
+							  pnums[0] = first_ep - 1 - nvertices + geom.vmap.FindIndex(v1);
+						 }
+					if (isClosedEdge)
+					{
+						pnums.Last() = pnums[0];
+					 }
+					 else
+					 {
+					   if (pnums.Last() == -1)
+					   {
+						 double tol = BRep_Tool::Tolerance(v2);
+						 for (PointIndex pi = 1; pi < first_ep; pi++)
+						   if (pi != pnums[0] && Dist2(mesh[pi], lp) < 2 * tol*tol)
+						     pnums.Last() = pi;
+
+						   if (pnums.Last() == -1)
+						     pnums.Last() = first_ep - 1 - nvertices + geom.vmap.FindIndex(v2);
+						}
+
+					    if (Dist2(fp, mesh[PointIndex(pnums[0])]) >
+						    Dist2(lp, mesh[PointIndex(pnums.Last())]))
+						std::swap(pnums[0], pnums.Last());
+					 }
                   }
                }
 
