@@ -33,9 +33,9 @@ namespace netgen
    // free data used to optimize Project() and FastProject()
    OCCGeometry::~OCCGeometry()
    {
-   NCollection_DataMap<int, BRepTopAdaptor_FClass2d*>::Iterator it(fclsmap);
-   for (; it.More(); it.Next())
-     delete it.Value();
+     NCollection_DataMap<int, BRepTopAdaptor_FClass2d*>::Iterator it(fclsmap);
+     for (; it.More(); it.Next())
+       delete it.Value();
    }
 
    void OCCGeometry :: PrintNrShapes ()

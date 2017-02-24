@@ -254,7 +254,7 @@ namespace netgen
          vmap.Clear();
       }
 
-	  ~OCCGeometry(); // -- to free cached project and classifier
+	  DLL_HEADER ~OCCGeometry(); // -- to free cached project and classifier
 
       DLL_HEADER virtual void Save (string filename) const;
 
