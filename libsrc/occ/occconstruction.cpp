@@ -28,7 +28,7 @@
 #include <BRepAlgoAPI_Common.hxx>
 #include <BRepAlgoAPI_Fuse.hxx>
 #include <BRepAlgoAPI_Section.hxx>
-#include <BRepOffsetAPI_Sewing.hxx>
+//#include <BRepOffsetAPI_Sewing.hxx>
 //#include <BRepAlgo_Sewing.hxx>
 #include <BRepOffsetAPI_MakeOffsetShape.hxx>
 #include <ShapeFix_Shape.hxx>
