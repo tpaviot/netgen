@@ -335,6 +335,7 @@ namespace netgen
 
       double eps = 1e-6 * geom.GetBoundingBox().Diam();
 	  const double eps2 = eps * eps; // -- small optimization
+	  
 	  int first_vp = mesh.GetNP() + 1; // -- to support SMESH sub-meshes
 
       for (int i = 1; i <= nvertices; i++)
@@ -600,13 +601,15 @@ namespace netgen
                {
                   bool exists = 0;
                   int j;
-                  for (j = first_ep; j <= mesh.GetNP(); j++)
-					 if (!merge_solids && mesh.Point(j).GetLayer() != geomedgenr) continue; // to support SMESH fuse edges
-                     if ((mesh.Point(j)-Point<3>(mp[i-1])).Length() < eps)
-                     {
-                        exists = 1;
-                        break;
-                     }
+				  for (j = first_ep; j <= mesh.GetNP(); j++)
+				  {
+					  if (!merge_solids && mesh.Point(j).GetLayer() != geomedgenr) continue; // to support SMESH fuse edges
+					  if ((mesh.Point(j) - Point<3>(mp[i - 1])).Length() < eps)
+					  {
+						  exists = 1;
+						  break;
+					  }
+				  }
 
                      if (exists)
                         pnums[i] = j;
